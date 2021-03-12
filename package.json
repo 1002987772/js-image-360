@@ -8,7 +8,10 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "alloyfinger": "^0.1.16",
     "core-js": "^3.6.5",
+    "css3transform": "^1.2.3",
+    "phy-touch": "^0.1.1",
     "vue": "^2.6.11"
   },
   "devDependencies": {
