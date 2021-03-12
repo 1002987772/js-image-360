@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    <view-360></view-360>
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
+    <view-360 :modelImages="models" :poster="poster"></view-360>
   </div>
 </template>
 
@@ -12,6 +11,14 @@ export default {
   name: 'App',
   components: {
     View360
+  },
+  data() {
+    return {
+      models: new Array(31).fill('').map((item, index) => {
+        return require(`./assets/models/model${index + 1}.png`)
+      }),
+      poster: require(`./assets/models/model1.png`)
+    }
   }
 }
 </script>

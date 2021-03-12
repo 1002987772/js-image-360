@@ -1,7 +1,11 @@
 <template>
-  <div class="view-360" :class="ready && 'ready'" id="wrapper">
+  <div 
+    id="wrapper"
+    class="view-360" 
+    :class="ready && 'ready'"  
+    :style="`width: ${width}px;height: ${height}px`">
     <canvas id="360-canvas" class="image" />
-    <img class="poster" src="../assets/models/model1.png" />
+    <img class="poster" :src="poster" />
   </div>
 </template>
 
@@ -9,6 +13,26 @@
 import PhyTouch from 'phy-touch'
 
 export default {
+  props: {
+    modelImages: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    poster: {
+      type: String,
+      default: ''
+    },
+    width: {
+      type: Number,
+      default: 375
+    },
+    height: {
+      type: Number,
+      default: 210
+    }
+  },
   mounted() {
     this.init()
   },
@@ -24,7 +48,7 @@ export default {
   },
   methods: {
     loadAllResource() {
-      return Promise.all(this.getModelImages().map(url => {
+      return Promise.all(this.modelImages.map(url => {
         return this.loadImage(url)
       }))
     },
@@ -40,41 +64,35 @@ export default {
         }
       })
     },
-    getModelImages() {
-      return new Array(31).fill('').map((item, index) => {
-        return require(`../assets/models/model${index + 1}.png`)
-      })
-    },
     init() {
       this.loadAllResource().then((resources) => {
         this.models = resources
         this.initWrapper()
+        this.initCanvas()
       }).catch((err) => {
         console.log(err)
       });
     },
     initWrapper() {
       var phyTouch = new PhyTouch({
-        touch:"#wrapper",//反馈触摸的dom
-        vertical: false,//不必需，默认是true代表监听竖直方向touch
-        target: { x: 0 }, //运动的对象
-        property: "x",  //被运动的属性
-        sensitivity: 0.1,//不必需,触摸区域的灵敏度，默认值为1，可以为负数
-        step: 1,//用于校正到step的整数倍
-        bindSelf: false,
-        maxSpeed: 1, //不必需，触摸反馈的最大速度限制 
+        touch:"#wrapper",
+        vertical: false,
+        sensitivity: 0.1,
+        step: 1,
+        maxSpeed: 1,
         value: 0,
         change:(value) => { 
-          console.log(value)
           this.drawImage(value)
         },
         touchEnd() {
           phyTouch.stop()
         }
       })
+    },
+    initCanvas() {
       this.canvas = document.getElementById('360-canvas')
-      this.canvas.width = window.innerWidth * this.devicePixelRatio
-      this.canvas.height = 210 * this.devicePixelRatio
+      this.canvas.width = this.width * this.devicePixelRatio
+      this.canvas.height = this.height * this.devicePixelRatio
 			this.ctx = this.canvas.getContext('2d')
       this.drawImage(0)
     },
@@ -92,9 +110,6 @@ export default {
 
 <style scoped>
 #wrapper{
-  width: 100%;
-  height: 211px;
-  margin-top: 25vh;
   position: relative;
   pointer-events: none;
 }
